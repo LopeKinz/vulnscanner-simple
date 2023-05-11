@@ -36,7 +36,7 @@ Amass + Nmap + Nikto Automatisierung von 1337core
         print(f"[-] Path in {target_path} already exist!")
     else:
         os.system(f"mkdir -p {target_path}/")
-    
+
     # run amass
     os.system(f"amass enum -passive -nolocaldb -d {domain} -o {target_path}/amass.txt")
     os.system(f"echo {domain} >> {target_path}/amass.txt")
@@ -52,13 +52,10 @@ Amass + Nmap + Nikto Automatisierung von 1337core
             if "/open/tcp//http" in line or "/open/tcp//ssl|https" in line:
                 host_match = re.search('Host: ([0-9\\.]+)', line)
                 if isinstance(host_match, re.Match):
-                    host = host_match.group(1)
+                    host = host_match[1]
                     ports = re.findall('(\\d+)/open/tcp//http', line)
                     ports += re.findall('(\\d+)/open/tcp//ssl\\|https', line)
-                    for port in ports:
-                        webservers.append(f"{host}:{port}")
-
-
+                    webservers.extend(f"{host}:{port}" for port in ports)
     with open(f"{target_path}/webserver.txt", "w") as myfile:
         myfile.write("\n".join(webservers))
 
